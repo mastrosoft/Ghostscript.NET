@@ -194,6 +194,23 @@ namespace Ghostscript.NET
         /// <returns>A dictionary of a page numbers with the ink coverage.</returns>
         public static Dictionary<int, GhostscriptPageInkCoverage> GetInkCoverage(string path, int firstPage, int lastPage, GhostscriptVersionInfo versionInfo, bool fromMemory = false)
         {
+            GhostscriptProcessor proc = new GhostscriptProcessor(versionInfo, fromMemory);
+            return GetInkCoverage(path, firstPage, lastPage, new GhostscriptProcessor(versionInfo, fromMemory));
+        }
+
+        /// <summary>
+        /// Returns Ink coverage for specified page range.
+        /// The result is ink coverage for the CMYK inks, separately for each single page (for RGB colors, it does a silent conversion to CMYK color space internally).
+        /// This function is supported only in Ghostscript v9.05 or newer.
+        /// </summary>
+        /// <param name="path">PDF file path.</param>
+        /// <param name="firstPage">Designated start page of the document. Pages of all documents in PDF collections are numbered sequentionally.</param>
+        /// <param name="lastPage">Designated end page of the document. Pages of all documents in PDF collections are numbered sequentionally.</param>
+        /// <param name="versionInfo">GhostscriptVersionInfo instance that tells which Ghostscript library to use.</param>
+        /// <param name="fromMemory">Whether the library should be loaded in memory</param>
+        /// <returns>A dictionary of a page numbers with the ink coverage.</returns>
+        public static Dictionary<int, GhostscriptPageInkCoverage> GetInkCoverage(string path, int firstPage, int lastPage, GhostscriptProcessor proc)
+        {
             GhostscriptPipedOutput gsPipedOutput = new GhostscriptPipedOutput();
             string outputPipeHandle = "%handle%" + int.Parse(gsPipedOutput.ClientHandle).ToString("X2");
 
@@ -211,7 +228,6 @@ namespace Ghostscript.NET
             switches.Add("-sDEVICE=inkcov");
             switches.Add(path);
 
-            GhostscriptProcessor proc = new GhostscriptProcessor(versionInfo, fromMemory);
             proc.StartProcessing(switches.ToArray(), null);
 
             byte[] data = gsPipedOutput.Data;
@@ -228,7 +244,7 @@ namespace Ghostscript.NET
 
                 int pageNumber = firstPage == 0 ? 1 : firstPage;
 
-                foreach(string line in outputLines)
+                foreach (string line in outputLines)
                 {
                     GhostscriptPageInkCoverage pic = new GhostscriptPageInkCoverage();
                     pic.Page = pageNumber;
@@ -255,13 +271,11 @@ namespace Ghostscript.NET
                 }
 
                 return result;
-            }
-            else
+            } else
             {
-                return null; 
+                return null;
             }
         }
-
         #endregion
 
     }
