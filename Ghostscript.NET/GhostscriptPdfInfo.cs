@@ -190,6 +190,7 @@ namespace Ghostscript.NET
         /// <param name="firstPage">Designated start page of the document. Pages of all documents in PDF collections are numbered sequentionally.</param>
         /// <param name="lastPage">Designated end page of the document. Pages of all documents in PDF collections are numbered sequentionally.</param>
         /// <param name="versionInfo">GhostscriptVersionInfo instance that tells which Ghostscript library to use.</param>
+        /// <param name="fromMemory">Whether the library should be loaded in memory</param>
         /// <returns>A dictionary of a page numbers with the ink coverage.</returns>
         public static Dictionary<int, GhostscriptPageInkCoverage> GetInkCoverage(string path, int firstPage, int lastPage, GhostscriptVersionInfo versionInfo, bool fromMemory = false)
         {
