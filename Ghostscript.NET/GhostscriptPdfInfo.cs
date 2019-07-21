@@ -191,7 +191,7 @@ namespace Ghostscript.NET
         /// <param name="lastPage">Designated end page of the document. Pages of all documents in PDF collections are numbered sequentionally.</param>
         /// <param name="versionInfo">GhostscriptVersionInfo instance that tells which Ghostscript library to use.</param>
         /// <returns>A dictionary of a page numbers with the ink coverage.</returns>
-        public static Dictionary<int, GhostscriptPageInkCoverage> GetInkCoverage(string path, int firstPage, int lastPage, GhostscriptVersionInfo versionInfo)
+        public static Dictionary<int, GhostscriptPageInkCoverage> GetInkCoverage(string path, int firstPage, int lastPage, GhostscriptVersionInfo versionInfo, bool fromMemory = false)
         {
             GhostscriptPipedOutput gsPipedOutput = new GhostscriptPipedOutput();
             string outputPipeHandle = "%handle%" + int.Parse(gsPipedOutput.ClientHandle).ToString("X2");
@@ -210,7 +210,7 @@ namespace Ghostscript.NET
             switches.Add("-sDEVICE=inkcov");
             switches.Add(path);
 
-            GhostscriptProcessor proc = new GhostscriptProcessor(versionInfo, false);
+            GhostscriptProcessor proc = new GhostscriptProcessor(versionInfo, fromMemory);
             proc.StartProcessing(switches.ToArray(), null);
 
             byte[] data = gsPipedOutput.Data;
